@@ -112,7 +112,13 @@ Images (top row) and their respective magnitude spectra (bottom row), log scaled
 </div>
 </div>
 <p>Basically, spectral residual saliency detects the “spikes” in the magnitude spectrum, and says those “spikes” correspond to salient elements in the original image. To do that, it first “smooths out” the magnitude spectrum to get its general trend, and just takes the difference between the original magnitude spectrum and the “smoothed” one. Using an inverse Fourier transform on this difference (with a bit of additional trickery I won’t get into :p), one gets the corresponding objects in the source image - what we call a <em>saliency map</em>.</p>
-<p>The raw saliency map seems to detect the edges of the character well. However, it fails to take into account large patches of homogeneous color on the character itself, and picks up isolated edges in the background. Blurring out the saliency map with a Gaussian filter as the original paper suggests solves both issues. <a href="http://people.csail.mit.edu/tjudd/SaliencyBenchmark/">Benchmark data</a> also show that blurrier saliency maps perform better on natural images, and this result seems to carry to animation images.</p>
+<div class="bigcenterimgcontainer">
+<img src="miku0logspectrum.png">
+<div class="caption">
+Plot of the magnitude spectrum of an anime image (red) and the same spectrum smoothed out (blue), on a log scale, against frequency. Where the red line differs from the blue line is where the algorithm finds salient objects.
+</div>
+</div>
+<p>The raw saliency map seems to detect the edges of the character well. However, it fails to take into account large patches of homogeneous color on the character itself, and picks up isolated edges in the background. Blurring out the saliency map with a Gaussian filter as the original paper suggests solves both issues. <a href="http://people.csail.mit.edu/tjudd/SaliencyBenchmark/">Benchmark data</a> also shows that blurrier saliency maps perform better on natural images, and this result seems to carry to animation images.</p>
 <div class="bigcenterimgcontainer">
 <a href="http://hatsunemiku93.deviantart.com/art/Hatsune-X-Miku-118398739"> <img src="miku_hatsune_0.jpg" style="width: 32%;height: auto; display: inline;" title="Hatsune x Miku - by hatsunemiku93"> </a> <img src="mikurawsaliency.png" style="width: 32%;height: auto; display: inline;"> <img src="mikufilteredsaliency.png" style="width: 32%;height: auto; display: inline;">
 <div class="caption">
