@@ -99,11 +99,11 @@
 		    }
 		});
 	    });
-	    // Draw the principal components
+	    // Draw the principal component
 	    $.getJSON("motoko4eig.json", function (eigData) {
 		evecs = eigData.evectors;
 		evecEnds = [];
-		for (i in [0,1,2]) {
+		for (i in [0, 1, 2]) {
 		    evec = numeric.mul(Math.sqrt(eigData.evalues[i]),
 				       [evecs[0][i], 
 					evecs[1][i], 
@@ -123,6 +123,6 @@
 		    size: .07
 		});
 	    });
-	});
+	});	
     });
 })();
