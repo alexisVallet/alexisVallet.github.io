@@ -12,6 +12,10 @@
 	return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
     }
 
+    function fallbackImage() {
+	$("#info").html("<img src=\"fallbackScatterPlot.jpg\">");
+    }
+
     // Clock that starts as soon as it is first called (per id).
     var clocks = {};
     window.clock = function (id) {
@@ -22,7 +26,14 @@
     /**
      * Bootstrap
      */
+    // Checks webgl availability, otherwise falls back to an image.
     DomReady.ready(function() {
+	if (!window.WebGLRenderingContext) {
+            fallbackImage();
+
+            return;   
+	}
+
 	ThreeBox.preload([
 	    '../../../js/MathBox.js/shaders/snippets.glsl.html',
 	], function () {
