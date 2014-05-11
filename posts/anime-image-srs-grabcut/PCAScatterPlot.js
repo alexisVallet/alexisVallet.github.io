@@ -12,10 +12,6 @@
 	return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
     }
 
-    function fallbackImage() {
-	$("#info").after("<img src=\"fallbackScatterPlot.jpg\" style=\"width: 100%; height: auto;\">");
-    }
-
     // Clock that starts as soon as it is first called (per id).
     var clocks = {};
     window.clock = function (id) {
@@ -28,15 +24,6 @@
      */
     // Checks webgl availability, otherwise falls back to an image.
     DomReady.ready(function() {	
-	var supportsWebGL = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
-
-	if (!supportsWebGL) {
-            fallbackImage();
-
-            return;
-	}
-	
-
 	ThreeBox.preload([
 	    '../../../js/MathBox.js/shaders/snippets.glsl.html',
 	], function () {

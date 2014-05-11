@@ -4,7 +4,7 @@
     
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Anime image background removal: saliency detection and matting (Draft) - アレクシのブログ - Alexis's blog</title>
+        <title>Anime image background removal: saliency detection and matting - アレクシのブログ - Alexis's blog</title>
         
         <link rel="stylesheet" href="../../fonts/Serif/cmun-serif.css" />
         <link rel="stylesheet" href="../../fonts/Serif-Slanted/cmun-serif-slanted.css" />
@@ -71,7 +71,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-md-8">
-                            <h1>Anime image background removal: saliency detection and matting (Draft)</h1>
+                            <h1>Anime image background removal: saliency detection and matting</h1>
                             <div id="body">
                                 <div class="info">
     <p style="font-family:CMSS; font-size:120%">Posted on May 11, 2014</p>
@@ -201,8 +201,15 @@ Without center prior, and with center prior on the right. Although poor Mikuru l
 <p>Anyway, running saliency detection on each color channel is still not guaranteed to be very meaningful even in <span class="math">\(L^*a^*b^*\)</span> color space. So my first idea was to find the best possible conversion to grayscale for a given image, the one that would keep the most information about the original image. Converting a color image to grayscale is a special case of what we fancy computer scientists call dimensionality reduction, as we go from 3D (RGB or <span class="math">\(L^*a^*b^*\)</span>) to 1D. A very well-known dimensionality reduction method is called principal component analysis (PCA), and so I tried that out.</p>
 <p>Essentially, PCA takes a bunch of points in space - 3D space in our case - and finds the orientation of this bunch of points. This orientation can be defined as the direction at which the points show the most variation from the average. So if we project all the points on the line defined by this direction, we get the 1D data (a point on a line) which preserves the most variation among these points. Translating this to image vocabulary, if we apply PCA to <span class="math">\(L^*a^*b^*\)</span> pixel values in our image, we get new grayscale pixel values which preserve the most variation in human perception - as that is what variation in <span class="math">\(L^*a^*b^*\)</span> color space means in some sense.</p>
 <div class="bigcenterimgcontainer">
-<iframe class="mathbox" src="../../posts/anime-image-srs-grabcut/PCAScatterPlot.html">
+<iframe src="../../posts/anime-image-srs-grabcut/PCAScatterPlot.html" class="webgl">
 </iframe>
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-12">
+<img src="fallbackScatterPlot.jpg" class="nowebgl img-responsive">
+</div>
+</div>
+</div>
 <div class="caption">
 3D scatter plot of <span class="math">\(L^*a^*b^*\)</span> pixel values in an anime image. Gray axis is <span class="math">\(L^*\)</span>, pink is <span class="math">\(a^*\)</span> and green is <span class="math">\(b^*\)</span>. In blue, we have the 3 vectors <span class="math">\(V_1\)</span>, <span class="math">\(V_2\)</span> and <span class="math">\(V_3\)</span>, scaled by <span class="math">\(x_1\)</span>, <span class="math">\(x_2\)</span> and <span class="math">\(x_3\)</span> respectively. Click to rotate the plot around.
 </div>
@@ -256,8 +263,7 @@ Without center prior, and with center prior on the right. Although poor Mikuru l
 
     <script src="../../js/bootstrap-carousel.js"></script>
     <script src="../../js/toc.js"></script>
-
-    <script src="../../js/analytics.js"></script>
+    <script src="../../js/webGLFallback.js"></script>
 
     <noscript>Enable JavaScript for footnotes, Disqus comments, and other cool stuff.</noscript>
 
