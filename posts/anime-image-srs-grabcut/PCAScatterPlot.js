@@ -27,8 +27,10 @@
      * Bootstrap
      */
     // Checks webgl availability, otherwise falls back to an image.
-    DomReady.ready(function() {
-	if (!window.WebGLRenderingContext) {
+    DomReady.ready(function() {	
+	var supportsWebGL = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
+
+	if (!supportsWebGL) {
             fallbackImage();
 
             return;   
