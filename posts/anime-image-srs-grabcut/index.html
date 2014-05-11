@@ -86,14 +86,35 @@
 <h2 id="background-removal">Background removal</h2>
 <p>Unlike the face of a human being, the facial features of an anime character are not really sufficient for identification. There is simply too much variation across artists and drawing styles for that to be practical. So we’d like to get information from the entire body of the character - or whatever parts of the body happen to be in the image :p - for identification.</p>
 <div class="bigcenterimgcontainer">
-<a href="http://siguredo.deviantart.com/art/Chibi-fan-Asuka-Langley-100037700"> <img src="../../posts/anime-image-srs-grabcut/asuka_langley_1.jpg" style="width: 32%;height: auto; display: inline;" title="Chibi fan -  Asuka Langley - by siguredo"> </a> <a href="http://luches.deviantart.com/art/Asuka-147926773"> <img src="../../posts/anime-image-srs-grabcut/asuka_langley_6.jpg" style="width: 32%;height: auto; display: inline;" title="Asuka - by luches"> </a> <a href="http://qsan90.deviantart.com/art/Asuka-Shikinami-Langley-167171898"> <img src="../../posts/anime-image-srs-grabcut/asuka_langley_9.jpg" style="width: 32%;height: auto; display: inline;" title="Asuka Shikinami Langley - by qsan90"> </a>
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-4 vcenter">
+<a href="http://siguredo.deviantart.com/art/Chibi-fan-Asuka-Langley-100037700"> <img src="../../posts/anime-image-srs-grabcut/asuka_langley_1.jpg" class="img-responsive" title="Chibi fan -  Asuka Langley - by siguredo"> </a>
+</div>
+<div class="col-md-4 vcenter">
+<a href="http://luches.deviantart.com/art/Asuka-147926773"> <img src="../../posts/anime-image-srs-grabcut/asuka_langley_6.jpg" class="img-responsive" title="Asuka - by luches"> </a>
+</div>
+<div class="col-md-4 vcenter">
+<a href="http://qsan90.deviantart.com/art/Asuka-Shikinami-Langley-167171898"> <img src="../../posts/anime-image-srs-grabcut/asuka_langley_9.jpg" class="img-responsive" title="Asuka Shikinami Langley - by qsan90"> </a>
+</div>
+</div>
+</div>
 <div class="caption">
 Examples of variations across artists and drawing styles for a single character.
 </div>
 </div>
 <p>However, chances are the character is superimposed over some kind of background. This background rarely ever contains information relevant to character identification, so we would like to remove it as a first step. Background removal, also referred to as foreground extraction and matting, has been extensively studied in the case of natural images. There is, however, little literature about background extraction for artificial images of any kind. A well known matting algorithm called <a href="http://research.microsoft.com/pubs/67890/siggraph04-grabcut.pdf">GrabCut</a> is implemented in <a href="http://opencv.org/">OpenCV</a>, so I first tried that and it turned out to give surprisingly decent results for anime images.</p>
 <div class="bigcenterimgcontainer">
-<a href="http://dannex009.deviantart.com/art/Mikuru-Asahina-Mikuru-BEAM-62960402"> <img src="../../posts/anime-image-srs-grabcut/asahina_mikuru_0.png" style="width: 49%;height: auto; display: inline;" title="Mikuru Asahina - Mikuru BEAM - by dannex09"> </a> <img src="../../posts/anime-image-srs-grabcut/asahina_mikuru_0_grabcut.png" style="width: 49%;height: auto; display: inline;">
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-6 vcenter">
+<a href="http://dannex009.deviantart.com/art/Mikuru-Asahina-Mikuru-BEAM-62960402"> <img src="../../posts/anime-image-srs-grabcut/asahina_mikuru_0.png" title="Mikuru Asahina - Mikuru BEAM - by dannex09"> </a>
+</div>
+<div class="col-md-6 vcenter">
+<img src="../../posts/anime-image-srs-grabcut/asahina_mikuru_0_grabcut.png">
+</div>
+</div>
+</div>
 <div class="caption">
 Results of GrabCut with a manually specified bounding box.
 </div>
@@ -103,20 +124,54 @@ Results of GrabCut with a manually specified bounding box.
 <h2 id="spectral-residual-saliency-for-anime-images">Spectral residual saliency for anime images</h2>
 <p>This saliency detection method relies heavily on the Fourier transform, so here is a brief rundown of the properties we are interested in for this article. The Fourier transform, Fourier spectrum or just spectrum of an image <span class="math">\(I\)</span> is a complex valued image <span class="math">\(F(I)\)</span> of the same dimensions as <span class="math">\(I\)</span>. In a precise sense, the Fourier transform encodes information about patterns in the image according to the frequency at which they repeat - the further you go from the center of the spectrum, the higher the frequency. There is also an inverse Fourier transform <span class="math">\(F^{-1}\)</span> which reverses a Fourier transform into the original image, i.e. for any image <span class="math">\(I\)</span>, <span class="math">\(F^{-1}(F(I)) = I\)</span>. The magnitude spectrum of an image <span class="math">\(I\)</span> is the absolute value of its Fourier transform, <span class="math">\(|F(I)|\)</span>.</p>
 <div class="bigcenterimgcontainer">
-<a href="http://tinyglow.deviantart.com/art/Ginko-209756321"> <img src="ginko8grayscale.png" style="width: 49%;height: auto; display: inline;" title~"Ginko - by tinyglow"> <img src="ginko8reverted.png" style="width: 49%;height: auto; display: inline;"> </a>
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-6 vcenter">
+<a href="http://tinyglow.deviantart.com/art/Ginko-209756321"> <img src="ginko8grayscale.png" title~"Ginko - by tinyglow"> </a>
 </div>
-<div class="bigcenterimgcontainer">
-<img src="ginko8magnitude.png" style="width: 49%;height: auto; display: inline;"> <img src="ginko8circled.png" style="width: 49%;height: auto; display: inline;">
+<div class="col-md-6 vcenter">
+<img src="ginko8reverted.png">
+</div>
+</div>
+<div class="row">
+<div class="col-md-6 vcenter">
+<img src="ginko8magnitude.png">
+</div>
+<div class="col-md-6 vcenter">
+<img src="ginko8circled.png">
+</div>
+</div>
+</div>
 <div class="caption">
-Images (top row) and their respective magnitude spectra (bottom row), log scaled and normalized for better visualization. The second image was obtained by inverse Fourier transform on the spectrum of the first, having only kept a small disk in the center. This effectively removed all high frequency patterns in the image, and produced the blurred result you can see.
+Images (top) and their respective magnitude spectra (bottom), log scaled and normalized for better visualization. The second image was obtained by inverse Fourier transform on the spectrum of the first, having only kept a small disk in the center. This effectively removed all high frequency patterns in the image, and produced the blurred result you can see.
 </div>
 </div>
 <p>Basically, spectral residual saliency detects the “spikes” in the log magnitude spectrum, and says those “spikes” correspond to salient elements in the original image. To do that, it first “smooths out” the log magnitude spectrum to get its general trend, and just takes the difference between the original and the “smoothed” one. Using an inverse Fourier transform on this difference (after a bit of complex number trickery I won’t get into :p), one gets the corresponding objects in the source image - what we call a <em>saliency map</em>.</p>
 <div class="bigcenterimgcontainer">
-<a href="http://hatsunemiku93.deviantart.com/art/Hatsune-X-Miku-118398739"> <img src="miku_hatsune_0.jpg" style="width: 32%;height: auto; display: inline;" title="Hatsune x Miku - by hatsunemiku93"> </a> <img src="miku0logspec.png" style="width: 32%;height: auto; display: inline;"> <img src="miku0smoothed.png" style="width: 32%;height: auto; display: inline;">
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-4 vcenter">
+<a href="http://hatsunemiku93.deviantart.com/art/Hatsune-X-Miku-118398739"> <img src="miku_hatsune_0.jpg" title="Hatsune x Miku - by hatsunemiku93"> </a>
 </div>
-<div class="bigcenterimgcontainer">
-<img src="miku0residual.png" style="width: 32%;height: auto; display: inline;"> <img src="mikurawsaliency.png" style="width: 32%;height: auto; display: inline;"> <img src="mikufilteredsaliency.png" style="width: 32%;height: auto; display: inline;">
+<div class="col-md-4 vcenter">
+<img src="miku0logspec.png">
+</div>
+<div class="col-md-4 vcenter">
+<img src="miku0smoothed.png">
+</div>
+</div>
+<div class="row">
+<div class="col-md-4 vcenter">
+<img src="miku0residual.png">
+</div>
+<div class="col-md-4 vcenter">
+<img src="mikurawsaliency.png">
+</div>
+<div class="col-md-4 vcenter">
+<img src="mikufilteredsaliency.png">
+</div>
+</div>
+</div>
 <div class="caption">
 All the steps of spectral residual saliency. From left to right, top to bottom: the source image, its magnitude spectrum on a log scale (after grayscale conversion), the same spectrum “smoothed”, the absolute difference image between the 2 previous spectra, the corresponding saliency map via inverse Fourier transform, and the same saliency map filtered.
 </div>
@@ -124,9 +179,18 @@ All the steps of spectral residual saliency. From left to right, top to bottom: 
 <p>The raw saliency map seems to detect the edges of the character well. However, it fails to take into account large patches of homogeneous color on the character itself, and picks up isolated edges in the background. Blurring out the saliency map with a Gaussian filter as the original paper suggests solves both issues. <a href="http://people.csail.mit.edu/tjudd/SaliencyBenchmark/">Benchmark data</a> also shows that blurrier saliency maps perform better on natural images, and this result seems to carry to animation images.</p>
 <p>After blurring, some maps still fail to account for the character in the image, picking up irrelevant text, sharp background objects and foreground frames, often on the sides of the image. Like photos however, the area of interest tends to be in the center of the picture. We therefore add a simple 2D Gaussian to the middle of the image in order to introduce a center bias. This <a href="http://people.csail.mit.edu/tjudd/SaliencyBenchmark/">has been shown</a> to improve saliency results in the case of natural images, and it seems that anime images follow this trend too.</p>
 <div class="bigcenterimgcontainer">
-<a href="http://spacecowboytv.deviantart.com/art/Mikuru-Asahina-63493581"> <img src="asahina9.png" style="width: 45%;height: auto; display: inline;" title="Mikuru Asahina by spacecowboytv"> </a> <a href="http://spacecowboytv.deviantart.com/art/Mikuru-Asahina-63493581"> <img src="asahina9centered.png" style="width: 45%;height: auto; display: inline;" title="Mikuru Asahina by spacecowboytv"> </a>
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-6 vcenter">
+<a href="http://spacecowboytv.deviantart.com/art/Mikuru-Asahina-63493581"> <img src="asahina9.png" title="Mikuru Asahina by spacecowboytv"> </a>
+</div>
+<div class="col-md-6 vcenter">
+<a href="http://spacecowboytv.deviantart.com/art/Mikuru-Asahina-63493581"> <img src="asahina9centered.png" title="Mikuru Asahina by spacecowboytv"> </a>
+</div>
+</div>
+</div>
 <div class="caption">
-Without center prior on the left, with center prior on the right. Although poor Mikuru lost an eye in the process, it’s quite a bit better for our purposes.
+Without center prior, and with center prior on the right. Although poor Mikuru lost an eye in the process, it’s quite a bit better for our purposes.
 </div>
 </div>
 <p>The implementation of GrabCut in OpenCV then expects a mask indicating what is “probably background” and “probably foreground”. To do this, we simply threshold the saliency map - if the saliency of a pixel is below a certain value, then it’s probably background. Otherwise, it’s probably foreground. From there, GrabCut does a remarkable job without further user inputs :) .</p>
@@ -159,8 +223,6 @@ Without center prior on the left, with center prior on the right. Although poor 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-
-<script src="../../js/inlineDisqussions.js"></script>
 <script src="../../js/disqus.js"></script>
 
                             </div>
@@ -192,9 +254,7 @@ Without center prior on the left, with center prior on the right. Although poor 
     <script src="../../highlight/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
 
-    <script src="../../js/footnotes.js"></script>
     <script src="../../js/bootstrap-carousel.js"></script>
-    <script src="../../js/inlineDisqussions.js"></script>
     <script src="../../js/toc.js"></script>
 
     <script src="../../js/analytics.js"></script>
