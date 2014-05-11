@@ -74,7 +74,7 @@
                             <h1>Anime image background removal: saliency detection and matting (Draft)</h1>
                             <div id="body">
                                 <div class="info">
-    <p style="font-family:CMSS; font-size:120%">Posted on April 19, 2014</p>
+    <p style="font-family:CMSS; font-size:120%">Posted on May 11, 2014</p>
     <!--
         by Alexis
     -->
@@ -113,18 +113,15 @@ Images (top row) and their respective magnitude spectra (bottom row), log scaled
 </div>
 <p>Basically, spectral residual saliency detects the “spikes” in the log magnitude spectrum, and says those “spikes” correspond to salient elements in the original image. To do that, it first “smooths out” the log magnitude spectrum to get its general trend, and just takes the difference between the original and the “smoothed” one. Using an inverse Fourier transform on this difference (after a bit of complex number trickery I won’t get into :p), one gets the corresponding objects in the source image - what we call a <em>saliency map</em>.</p>
 <div class="bigcenterimgcontainer">
-<img src="miku0logspec.png" style="width: 32%;height: auto; display: inline;"> <img src="miku0smoothed.png" style="width: 32%;height: auto; display: inline;"> <img src="miku0residual.png" style="width: 32%;height: auto; display: inline;">
+<a href="http://hatsunemiku93.deviantart.com/art/Hatsune-X-Miku-118398739"> <img src="miku_hatsune_0.jpg" style="width: 32%;height: auto; display: inline;" title="Hatsune x Miku - by hatsunemiku93"> </a> <img src="miku0logspec.png" style="width: 32%;height: auto; display: inline;"> <img src="miku0smoothed.png" style="width: 32%;height: auto; display: inline;">
+</div>
+<div class="bigcenterimgcontainer">
+<img src="miku0residual.png" style="width: 32%;height: auto; display: inline;"> <img src="mikurawsaliency.png" style="width: 32%;height: auto; display: inline;"> <img src="mikufilteredsaliency.png" style="width: 32%;height: auto; display: inline;">
 <div class="caption">
-From left to right, the magnitude spectrum of an anime image on a log scale, the same spectrum “smoothed”, the absolute difference image between the two of them. White dots in the last image correspond to salient areas in the original image.
+All the steps of spectral residual saliency. From left to right, top to bottom: the source image, its magnitude spectrum on a log scale (after grayscale conversion), the same spectrum “smoothed”, the absolute difference image between the 2 previous spectra, the corresponding saliency map via inverse Fourier transform, and the same saliency map filtered.
 </div>
 </div>
 <p>The raw saliency map seems to detect the edges of the character well. However, it fails to take into account large patches of homogeneous color on the character itself, and picks up isolated edges in the background. Blurring out the saliency map with a Gaussian filter as the original paper suggests solves both issues. <a href="http://people.csail.mit.edu/tjudd/SaliencyBenchmark/">Benchmark data</a> also shows that blurrier saliency maps perform better on natural images, and this result seems to carry to animation images.</p>
-<div class="bigcenterimgcontainer">
-<a href="http://hatsunemiku93.deviantart.com/art/Hatsune-X-Miku-118398739"> <img src="miku_hatsune_0.jpg" style="width: 32%;height: auto; display: inline;" title="Hatsune x Miku - by hatsunemiku93"> </a> <img src="mikurawsaliency.png" style="width: 32%;height: auto; display: inline;"> <img src="mikufilteredsaliency.png" style="width: 32%;height: auto; display: inline;">
-<div class="caption">
-Source image, raw saliency map and filtered saliency map.
-</div>
-</div>
 <p>After blurring, some maps still fail to account for the character in the image, picking up irrelevant text, sharp background objects and foreground frames, often on the sides of the image. Like photos however, the area of interest tends to be in the center of the picture. We therefore add a simple 2D Gaussian to the middle of the image in order to introduce a center bias. This <a href="http://people.csail.mit.edu/tjudd/SaliencyBenchmark/">has been shown</a> to improve saliency results in the case of natural images, and it seems that anime images follow this trend too.</p>
 <div class="bigcenterimgcontainer">
 <a href="http://spacecowboytv.deviantart.com/art/Mikuru-Asahina-63493581"> <img src="asahina9.png" style="width: 45%;height: auto; display: inline;" title="Mikuru Asahina by spacecowboytv"> </a> <a href="http://spacecowboytv.deviantart.com/art/Mikuru-Asahina-63493581"> <img src="asahina9centered.png" style="width: 45%;height: auto; display: inline;" title="Mikuru Asahina by spacecowboytv"> </a>
