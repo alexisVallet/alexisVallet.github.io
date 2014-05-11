@@ -13,7 +13,7 @@
     }
 
     function fallbackImage() {
-	$("#info").html("<img src=\"fallbackScatterPlot.jpg\">");
+	$("#info").after("<img src=\"fallbackScatterPlot.jpg\" style=\"width: 100%; height: auto;\">");
     }
 
     // Clock that starts as soon as it is first called (per id).
@@ -33,8 +33,9 @@
 	if (!supportsWebGL) {
             fallbackImage();
 
-            return;   
+            return;
 	}
+	
 
 	ThreeBox.preload([
 	    '../../../js/MathBox.js/shaders/snippets.glsl.html',
