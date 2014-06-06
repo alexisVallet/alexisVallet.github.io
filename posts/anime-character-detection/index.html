@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Can a computer learn to detect anime characters? - アレクシのブログ - Alexis's blog</title>
+        
+        <link rel="stylesheet" href="../../fonts/Serif/cmun-serif.css" />
+        <link rel="stylesheet" href="../../fonts/Serif-Slanted/cmun-serif-slanted.css" />
+
+        <!--BOOTSTRAP-->
+        <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <!--mobile first-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!--removed html from url but still is html-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+        <!--font awesome-->
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+        <!--fonts: allan & cardo-->
+        <link href="http://fonts.googleapis.com/css?family=Droid+Serif" rel="stylesheet" type="text/css">
+        <link href="http://fonts.googleapis.com/css?family=Droid+Sans" rel="stylesheet" type="text/css">
+
+        <link href="../../css/sticky-footer-navbar.css" rel="stylesheet">
+
+        <link href="../../css/default.css" rel="stylesheet">
+
+        <link href="../../css/bootstrap-carousel.css" rel="stylesheet">
+
+        <link href="../../css/inlineDisqussions.css" rel="stylesheet">
+
+        <!--Highlight-->
+        <link href="../../highlight/styles/github.css" rel="stylesheet">
+        
+        <!--link href="/favicon.ico" rel="shortcut icon"-->
+
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    </head>
+
+    <body>
+        <div id="wrap">
+            <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+                <div class="container">
+                    <!--Toggle header for mobile-->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand active" href="../../" id="home">アレクシのブログ - Alexis's blog</a>
+                    </div>
+                    <!--normal header-->
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="../../archive.html"><span class="glyphicon glyphicon-pencil"></span>  Blog</a></li>
+                            <li><a href="../../about.html"><span class="glyphicon glyphicon-user"></span>  About</a></li>
+                            <li><a href="../../contact.html"><span class="glyphicon glyphicon-envelope"></span>  Contact</a></li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </nav>
+
+            
+            <div id="content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h1>Can a computer learn to detect anime characters?</h1>
+                            <div id="body">
+                                <div class="info">
+    <p style="font-family:CMSS; font-size:120%">Posted on June  7, 2014</p>
+    <!--
+        by Alexis
+    -->
+</div>
+</br>
+
+<p>As I explained in my <a href="http://alexisvallet.github.io/posts/anime-image-srs-grabcut/">previous post</a>, I’m trying to automatically identify the anime characters in an anime image. As a first step, we’d like to eliminate the irrelevant information contained in the background of the image. My first approach combined GrabCut, which attempts to model the background of the image given minimal user input, and saliency detection which I hoped would be able to pick up the characters in the image.</p>
+<div class="bigcenterimgcontainer">
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-6">
+<img class="img-responsive" src="busstop.jpg" />
+</div>
+<div class="col-md-6">
+<img class="img-responsive" src="busstopbgrm.png" />
+</div>
+</div>
+</div>
+<div class="caption">
+Here the character is drawn in the same style as the background, and saliency detection fails to pick it up. Hence the decapitated schoolgirl.
+</div>
+</div>
+<p>After running some benchmarks, it turns out that saliency detection is quite inefficient for finding the location of the character in the image. Simply using a Gaussian map centered on the image gives better results. This is due to the fact that saliency detection doesn’t know what a character is - it justs identifies areas of the images which stand out to a human observer. So we would like an algorithm smart enough to know what a character looks like, and use that information to detect it.</p>
+<p>There are many object detection which can, given enough examples of an object, effectively detect it in an image. A couple of them stand out from the rest in terms of efficiency. Viola and Jones’s <a href="http://www.vision.rwth-aachen.de/teaching/cvws08/additional/viola-facedetection-ijcv04.pdf">object detection algorithm</a>, although it dates from 2001, is still very much used thanks to overall computational efficiency and detection performance, with high quality implementations freely available. While it excels at detecting relatively static patterns like people’s face in a photo, it has more trouble with deformable objects. <a href="http://www.cs.berkeley.edu/~rbg/papers/Object-Detection-with-Discriminatively-Trained-Part-Based-Models--Felzenszwalb-Girshick-McAllester-Ramanan.pdf">Felzenszwalb and Girschick’s method</a> successfully solves this issue by explicitely modeling the parts of the object to detect, as well as its deformations - although implementations are still lacking. As anime character images are characterized by large variations in posture and drawing style, I chose to study this algorithm for anime images.</p>
+<h2 id="learning-a-model-for-anime-characters">Learning a model for anime characters</h2>
+<p>To learn what an anime character looks like, Felzenszwalb’s method requires many, many examples of characters. For that purpose, I scraped a thousand anime images from deviantArt and manually put a bounding box around the characters so the algorithm knows where to look. The algorithm also needs example of what an anime character doesn’t look like, which is more complicated to obtain. Indeed, while it is easy in the case of natural images to just take a photo with no objects of interest, very few people draw anime style artwork without characters in them. So I decided to automatically generate them by cutting pieces from the background of the character images.</p>
+<!-- TODO: examples of negative images ? -->
+
+<p>I mentioned that this method models the parts of the objects automatically. The awesome thing is, it doesn’t require any examples for that - just give the algorithm a bounding box of the objects, and it will be able to find the right parts for detection. To see what kind of parts it infers, I trained the algorithm on the entire dataset of a thousand images as a first step.</p>
+<!-- TODO: higher quality images for the model -->
+<div class="bigcenterimgcontainer">
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-4">
+<img src="root1.jpg">
+</div>
+<div class="col-md-4">
+<img src="parts1.jpg">
+</div>
+<div class="col-md-4">
+<img src="deform1.jpg">
+</div>
+</div>
+</div>
+<div class="caption">
+Model infered by the algorithm on a large dataset of images. First image: the root filter which specifies the global shape of the object to detect. Second image: the parts filter, rectangular boxes which specify the shape of individual parts of the object, at a finer level of detail. Last image: deformation costs for the parts. Each rectangle specifies a deformation penalty for the corresponding part. Black means no penalty, and white means high penalty. Squinting a little, one might distinguish the shape of the head and chest of a character.
+</div>
+</div>
+
+<p>The model seems to pick up on the face and chest area of a character. This gives some confidence that training resulted in a meaningful model. To verify this intuition, I would like to measure how well it would perform against data it hasn’t encountered before.</p>
+<p>For this purpose I employed <a href="http://en.wikipedia.org/wiki/Cross-validation_%28statistics%29">cross validation</a>, randomly splitting the 1000 images dataset into five 200 images datasets. Each of them is used for testing the model trained on the 800 other images. Looking at how consistent the results are across the 5 datasets, we can get a sense of the way the algorithm deals with unseen data. If we get similar (hopefully good) results for each dataset, then the method probably managed to avoid <a href="http://en.wikipedia.org/wiki/Overfitting">overfitting</a> to its training set. Otherwise, we’re in trouble.</p>
+<!-- TODO: diagram to explain 5-fold cross validation  -->
+
+<h2 id="evaluating-character-detections">Evaluating character detections</h2>
+<p>Of course, this presumes a way to measure the ability of the trained model to correctly detect characters in the images of the dataset. For a given image, the algorithm gives us a set of detected bounding boxes <span class="math">\(D = \{D_1, ..., D_n\}\)</span> where it finds characters. If we also have a set of ground truth bounding boxes <span class="math">\(G = \{G_1, ..., G_m\}\)</span> specifying where the characters actually are in the image, we can compare the two and deduce a quality measure for the detection.</p>
+<div class="bigcenterimgcontainer">
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-6">
+<img class="img-responsive" src="tree-gt.jpg">
+</div>
+<div class="col-md-6">
+<img class="img-responsive" src="tree-det.jpg">
+</div>
+</div>
+</div>
+<div class="caption">
+Example of an image with ground truth bounding boxes (blue), and detected bounding boxes (red).
+</div>
+</div>
+<p>A simple starting point is to consider the character correctly detected when its ground truth box <span class="math">\(G_i\)</span> overlaps a detected box <span class="math">\(D_j\)</span> for at least 50%, i.e. using <a href="http://en.wikipedia.org/wiki/Set_theory">set theoretical</a> notation:</p>
+<p><span class="math">\[\frac{|G_i \cap D_j|}{|G_i \cup D_j|} \geq \frac{1}{2}\]</span></p>
+<p>However, this does not tell us how to deal with multiple detections - e.g. when multiple detected boxes overlap a single ground truth box for more than 50%. Nor does it tell us what to do with ambiguous detection, where multiple ground truth boxes overlap a single detected box - which character should be considered detected? It turns out to be a difficult issue to solve. The <a href="http://pascallin.ecs.soton.ac.uk/challenges/VOC/">PASCAL</a> object detection competition and dataset takes the point of view that multiple detections should be penalized: only one detection is considered correct, and all the other are considered false positives - regardless of whether or not they would correctly detect another object in the image. Ambiguous detection is not mentioned, presumably because the PASCAL dataset does not include overlapping ground truth boxes for a given object class. However, in our case it is common to have such overlapping boxes, so we have to deal with that too. Furthermore, multiple detections are not necessarily a bad thing in the context of a web artist community, and should not be overly penalized.</p>
+<div class="bigcenterimgcontainer">
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-6 vcenter">
+<img class="img-responsive" src="crossing-gt.jpg" />
+</div>
+<div class="col-md-6 vcenter">
+<img class="img-responsivd" src="crossing-det.jpg" />
+</div>
+</div>
+<div class="row">
+<div class="col-md-12 vcenter">
+<img class="img-responsive" src="overlap-graph.jpg" />
+</div>
+</div>
+</div>
+<div class="caption">
+Image with ground truth boxes (blue), detected boxes (red), and corresponding overlap graph <span class="math">\(B\)</span> with set <span class="math">\(G\)</span> of ground truths on the left and <span class="math">\(D\)</span> of detections on the right. We have one case of multiple detection (the boy on the left) and one case of ambiguous detection (the two children in the background).
+</div>
+</div>
+<p>I quickly realized that thinking about the issue in terms of the boxes is counter productive, as we really only care about the overlappings between them. Modeling these overlappings using a <a href="http://en.wikipedia.org/wiki/Graph_%28mathematics%29">graph</a> where vertices are boxes and edges are overlappings therefore makes a lot of sense. Consider the <a href="http://en.wikipedia.org/wiki/Bipartite_graph">bipartite graph</a> <span class="math">\(B = (V = (G, D), E)\)</span> where <span class="math">\(G\)</span> is the set of ground truth boxes, and <span class="math">\(D\)</span> the set of detected boxes, with an edge between boxes <span class="math">\(G_i\)</span> and <span class="math">\(D_j\)</span> if and only if they overlap more than 50%. It is then easy to visualize that multiple detections correspond to vertices in <span class="math">\(G\)</span> with more than one edge, and ambiguous detections correspond to vertices in <span class="math">\(D\)</span> with more than one edge. So we would like to find a subgraph <span class="math">\(S\)</span> of <span class="math">\(B\)</span> where all such nodes have exactly one edge between them, solving both cases of multiple and ambiguous detections.</p>
+<p>It turns out that this is a well studied problem in graph theory called the <a href="en.wikipedia.org/wiki/Maximum_matching">maximum matching</a> problem, for which <a href="http://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm">efficient algorithms</a> have been devised. This also tells us that there is not always only one such matching between ground truth and detected boxes, and so <span class="math">\(S\)</span> is not unique. However, this is not an issue as we only care about the number of edges in <span class="math">\(S\)</span> which is the same no matter which one we choose - otherwise it wouldn’t be a maximum matching by definition. Indeed, the number of edges is precisely the number of correctly detected boxes, or true positives (<span class="math">\(TP\)</span>). The number of false positives (<span class="math">\(FP\)</span>) is exactly the number of isolated vertices in <span class="math">\(D\)</span>, and the number of false negatives (<span class="math">\(FN\)</span>) is also the number of isolated vertices in <span class="math">\(G\)</span>. This gives us an efficient way to compute each of these values:</p>
+<p><span class="math">\[ TP = |E(S)| \quad FP = |D| - TP \quad FN = |G| - TP \]</span></p>
+<p>Repeating this process for all images in the dataset, and accumulating the total values for <span class="math">\(TP\)</span>, <span class="math">\(FP\)</span> and <span class="math">\(FN\)</span> across all the boxes, we can compute precision and recall scores giving us a good idea of how well our object detection performs:</p>
+<p><span class="math">\[ \text{precision} = \frac{TP}{TP + FP} \quad \text{recall} = \frac{TP}{TP + FN}\]</span></p>
+<p>The detection algorithm also gives us a score for each bounding box, indicating how likely each detected box is likely to be correct. We can threshold the boxes by this score to make the trade-off between precision and recall vary, and plot a curve giving us a good idea of overall detection performance regardless of the choice of threshold.</p>
+<div class="bigcenterimgcontainer">
+<div class="row">
+<div class="col-md-12">
+<img src="nbcomp-5fold-precision-recall.png" class="img-responsive" />
+</div>
+</div>
+<div class="caption">
+Average precision/recall curves across each of the 5 test sets of cross validation by number of components used. The closer to the upper-right, the better. This makes clear that using more than 1 component improve results considerably.
+</div>
+</div>
+<p>Looking at the results, it is clear that using multiple components - i.e. multiple distinct models instead of just one - improves on the results significantly. This means that animation characters show some large variations which the multiple component model seems to pick up on. Picking a high recall threshold for detection seems to be sensible - we will get more false positives in exchange for more true positives, which is an acceptable trade-off for web artist communities. This gets us a recall of roughly 70% using a multi-components model, which means that a given character in an image has a 70% chance of being detected by our algorithm.</p>
+<h2 id="whats-next">What’s next?</h2>
+<p>Now that I have a satisfying method for character detection, I would like to focus on identifying the detected character. For this, I am currently designing a method based on the deformable parts model also used for Felzenszwalb’s detection method. If everything goes well - i.e. if I can implement and test it in time - this will be the subject of a paper I will submit to the <a href="http://www2.ia-engineers.org/icisip2014/">ICISIP 2014</a> conference. I am planning on submitting it to <a href="http://arxiv.org/">arXiv</a> around the same time, and this should be the subject of my next post.</p>
+<h2 id="thanks">Thanks</h2>
+<p>I would like to thank my labmate Yuki Nakagawa, who allowed me to use his artwork for my blog posts and papers. Please check his work out on <a href="http://www.pixiv.net/member.php?id=167912#_=_">Pixiv</a> :) ! I would like to thank Andreas Mass, Hugo Duprat, Matthias Paillard and Joseph Kochmann for their feedback on the previous post and this one.</p>
+
+<div id="disqus_thread"></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="../../js/disqus.js"></script>
+
+                            </div>
+                        </div>
+                        <div class="col-md-4" id="toc-wrapper">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+
+            <div id="footer">
+                <div class="container">
+                    Based on <a href="http://oinkina.github.io/">Lambda Oinks</a> by <a href="https://github.com/oinkina">Oinkina</a>, using 
+                    <a href="http://jaspervdj.be/hakyll">Hakyll</a>,
+                    <a href="http://getbootstrap.com/">Bootstrap</a>, 
+                    <a href="http://www.mathjax.org/">MathJax</a>, and
+                    <a href="http://disqus.com/">Disqus</a>.
+                </div>
+            </div>
+        </div>
+
+    <!-- jQuery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+    <script src="../../bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="../../highlight/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <script src="../../js/bootstrap-carousel.js"></script>
+    <script src="../../js/toc.js"></script>
+    <script src="../../js/webGLFallback.js"></script>
+
+    <noscript>Enable JavaScript for footnotes, Disqus comments, and other cool stuff.</noscript>
+
+    </body>
+
+</html>
